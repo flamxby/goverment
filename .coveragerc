@@ -1,0 +1,5 @@
+[run]
+# measure branch coverage
+branch = True
+# omit uninteresting files
+omit = tests/*
