@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from datetime import date, datetime
 from typing import List, Optional
 
@@ -17,6 +17,14 @@ class User(BaseModel):
     occupation: str
     address: str
     password: str
+
+    @validator('citizen_id')
+    def check_citizen_id(cls, value: str):
+        if not value.isdigit():
+            raise ValueError('citizen id must be a digit')
+        if len(value) != 13:
+            raise ValueError('citizen id must have 13 digits')
+        return value
 
 class ShowUser(BaseModel):
     user_id: int
