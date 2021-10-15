@@ -33,6 +33,7 @@ class ShowUser(BaseModel):
 class ShowUserInfo(BaseModel):
     name: str
     surname: str
+    birth_date: date
     citizen_id: str
     occupation: str
     address: str

@@ -22,3 +22,7 @@ def create_reservation(request: Reservation, db: Session=Depends(get_db), curren
 @router.get('/{reservation_id}', response_model=ShowReservation)
 def get_reservation(reservation_id: int, db: Session=Depends(get_db)):
     return reservation.get(reservation_id, db)
+
+@router.get('/{year}/{month}/{day}', response_model=List[ShowReservation])
+def get_reservations_from_specific_date(year: int, month: int, day: int, db: Session=Depends(get_db)):
+    return reservation.get_from_specific_date(year, month, day, db)
