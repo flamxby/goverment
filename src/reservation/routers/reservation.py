@@ -30,3 +30,7 @@ def get_reservations_from_specific_date(year: int, month: int, day: int, db: Ses
 @router.delete('/{reservation_id}')
 def delete_reservation(reservation_id: int, db: Session=Depends(get_db)):
     return reservation.delete(reservation_id, db)
+
+@router.put('/{reservation_id}')
+def update_reservation(reservation_id: int, request: Reservation, db: Session=Depends(get_db), current_user: User = Depends(oauth2.get_current_user)):
+    return reservation.update(reservation_id, request, db, current_user)
