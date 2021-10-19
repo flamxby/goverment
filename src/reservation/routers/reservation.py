@@ -26,3 +26,7 @@ def get_reservation(reservation_id: int, db: Session=Depends(get_db)):
 @router.get('/{year}/{month}/{day}', response_model=List[ShowReservation])
 def get_reservations_from_specific_date(year: int, month: int, day: int, db: Session=Depends(get_db)):
     return reservation.get_from_specific_date(year, month, day, db)
+
+@router.delete('/{reservation_id}')
+def delete_reservation(reservation_id: int, db: Session=Depends(get_db)):
+    return reservation.delete(reservation_id, db)
