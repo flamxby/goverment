@@ -3,9 +3,6 @@ from .. import models, schemas
 from datetime import datetime
 from fastapi import status, HTTPException
 
-
-
-
 def get_all(db: Session):
     reservations = db.query(models.Reservation).all()
     return reservations
