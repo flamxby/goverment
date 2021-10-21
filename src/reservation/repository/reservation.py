@@ -23,7 +23,7 @@ def get(reservation_id: int, db: Session):
     if not reservation.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No reservation with this id")
     else:
-        return reservation
+        return reservation.first()
 
 def delete(reservation_id: int, db: Session):
     reservation = db.query(models.Reservation).filter(models.Reservation.reservation_id == reservation_id)
@@ -49,4 +49,4 @@ def update(reservation_id: int, request: schemas.Reservation, db: Session, curre
     }
     reservation.update(request_body)
     db.commit()
-    return "Updated"
+    return reservation.first()

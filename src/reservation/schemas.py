@@ -3,6 +3,7 @@ from datetime import date, datetime
 from typing import List, Optional
 
 class ReservationBase(BaseModel):
+    reservation_id: int
     register_timestamp: datetime
 
 class Reservation(ReservationBase):
