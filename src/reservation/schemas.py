@@ -3,13 +3,19 @@ from datetime import date, datetime
 from typing import List, Optional
 
 class ReservationBase(BaseModel):
-    reservation_id: int
     register_timestamp: datetime
 
 class Reservation(ReservationBase):
     class Config():
         orm_mode = True
 
+class ReservationForUser(BaseModel):
+    reservation_id: int
+    register_timestamp: datetime
+
+    class Config():
+        orm_mode = True
+    
 class User(BaseModel):
     name: str
     surname: str
@@ -34,7 +40,7 @@ class ShowUser(BaseModel):
     citizen_id: str
     occupation: str
     address: str
-    reservations: List[Reservation] = []
+    reservations: List[ReservationForUser] = []
 
     class Config():
         orm_mode = True
