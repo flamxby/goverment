@@ -15,6 +15,7 @@ Government is a module that prepares the booking master data, provides booking d
 * [Team Schedule](https://github.com/flamxby/government/wiki/Team-Schedule)
 * [API Plan and Budget](https://github.com/flamxby/government/wiki/API-Plan-and-Budget)
 * [Presentation](https://github.com/flamxby/government/wiki/Presentation)
+* [API Documentation](https://github.com/flamxby/government/wiki/API-Documentation)
 
 ### Getting Started
 * [Project Installation Instructions](INSTALL.md)
