@@ -60,7 +60,7 @@ def get_reservations_from_specific_date(year: int, month: int, day: int, db: Ses
 @router.delete('/{reservation_id}',
     responses={status.HTTP_404_NOT_FOUND: {"model": NotFoundResponse, "description": "Send a request but no object was found"}
     })
-def delete_reservation(reservation_id: int, db: Session=Depends(get_db)):
+def delete_reservation(reservation_id: int, db: Session=Depends(get_db), current_user: User = Depends(oauth2.get_current_user)):
     """
     Delete the specific reservation from reservation's id:
     ### Parameters:
