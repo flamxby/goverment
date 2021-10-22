@@ -51,7 +51,7 @@ def test_registration_with_valid_request_body(test_db):
         "reservations": []
     }
     response = client.post("/user/", json=user_data, headers={'Content-Type': 'application/json'})
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert response.json() == response_body
 
 def test_registration_with_duplicate_citizen_id(test_db):
