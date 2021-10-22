@@ -30,7 +30,7 @@ def create_reservation(request: Reservation, db: Session=Depends(get_db), curren
     """
     Create a reservation with this information (need to authorize):
     ### Request Body:
-    - **register_timestamp**: the datetime in ISO format
+    - **register_timestamp**: the datetime as an ISO format e.g., "2021-10-22T14:52:14.933Z"
     """
     return reservation.create(request, db, current_user)
 
@@ -42,7 +42,7 @@ def get_reservation(reservation_id: int, db: Session=Depends(get_db)):
     """
     Get the specific reservation's detail from reservation's id:
     ### Parameters:
-    - **reservation_id**: the id of the specific reservation
+    - **reservation_id**: the id of the specific reservation as an integer e.g., 1
     """
     return reservation.get(reservation_id, db)
 
@@ -51,9 +51,9 @@ def get_reservations_from_specific_date(year: int, month: int, day: int, db: Ses
     """
     Get the specific reservation's detail from the specific year, month, and day:
     ### Parameters:
-    - **year**: the year of the specific reservation
-    - **month**: the month of the specific reservation
-    - **day**: the day of the specific reservation
+    - **year**: the year of the specific reservation as an integer e.g., 2020
+    - **month**: the month of the specific reservation as an integer e.g., 10
+    - **day**: the day of the specific reservation as an integer e.g., 21
     """
     return reservation.get_from_specific_date(year, month, day, db)
 
@@ -64,7 +64,7 @@ def delete_reservation(reservation_id: int, db: Session=Depends(get_db), current
     """
     Delete the specific reservation from reservation's id:
     ### Parameters:
-    - **reservation_id**: the id of the specific reservation
+    - **reservation_id**: the id of the specific reservation as an integer e.g., 1
     """
     return reservation.delete(reservation_id, db)
 
@@ -76,8 +76,8 @@ def update_reservation(reservation_id: int, request: Reservation, db: Session=De
     """
     Update the specific reservation from reservation's id with this information (need to authorize):
     ### Parameters:
-    - **reservation_id**: the id of the specific reservation
+    - **reservation_id**: the id of the specific reservation as an integer e.g., 1
     ### Request Body:
-    - **register_timestamp**: the datetime in ISO format
+    - **register_timestamp**: the datetime as an ISO format e.g., "2021-10-22T14:52:14.933Z"
     """
     return reservation.update(reservation_id, request, db, current_user)

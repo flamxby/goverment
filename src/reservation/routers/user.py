@@ -16,13 +16,13 @@ def create_user(request: User, db: Session=Depends(get_db)):
     """
     Create a user with these information:
     ### Request Body:
-    - **name**: the name of the user
-    - **surname**: the surname of the user
-    - **citizen_id**: the citizen id of the user
-    - **birth_date**: the birthdate of the user
-    - **occupation**: the occupation of the user
-    - **address**: the address of the user
-    - **password**: the password of the user
+    - **name**: the name of the user as a string e.g., "Peter"
+    - **surname**: the surname of the user as a string e.g., "Parker"
+    - **citizen_id**: the citizen id of the user (13 digits) as a string e.g., "1134506547512"
+    - **birth_date**: the birthdate of the user as Date format e.g., "2001-08-21"
+    - **occupation**: the occupation of the user as a string e.g., "Doctor"
+    - **address**: the address of the user as a string e.g., "Bangkok"
+    - **password**: the password of the user as a string e.g., "Verystrongpassword"
     """
     return user.create(request, db)
 
@@ -31,6 +31,6 @@ def get_user(citizen_id: str, db: Session=Depends(get_db)):
     """
     Get the specific user's detail from the citizen id:
     ### Parameters:
-    - **citizen_id**: the citizen id of the specific user
+    - **citizen_id**: the citizen id of the user (13 digits) as a string e.g., "1134506547512"
     """
     return user.get(citizen_id, db)
