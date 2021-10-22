@@ -83,7 +83,7 @@ def test_create_reservation_with_valid_request_body(test_db):
         }
     }
     response = client.post('/reservation/', json=request_body, headers={'Content-Type': 'application/json'})
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert response.json() == response_body
     
 def test_get_reservation_on_specific_date(test_db):

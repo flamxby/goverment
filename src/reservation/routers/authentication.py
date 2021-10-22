@@ -9,8 +9,14 @@ router = APIRouter(
     tags=['Authentication']
 )
 
-@router.post('/login')
+@router.post('/login', responses={status.HTTP_404_NOT_FOUND: {"model": schemas.NotFoundResponse, "description": "Send a request but no object was found"}})
 def login(request: OAuth2PasswordRequestForm=Depends(), db:Session=Depends(database.get_db)):
+    """
+    Authenticate the user using this information:
+    ### Request Body:
+    - **username**: the username of the user (citizen_id)
+    - **password**: the password of the user
+    """
     user = db.query(models.User).filter(models.User.citizen_id == request.username).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Cannot found {request.citizen_id} citizen id")

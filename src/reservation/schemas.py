@@ -9,6 +9,13 @@ class Reservation(ReservationBase):
     class Config():
         orm_mode = True
 
+class ReservationForUser(BaseModel):
+    reservation_id: int
+    register_timestamp: datetime
+
+    class Config():
+        orm_mode = True
+    
 class User(BaseModel):
     name: str
     surname: str
@@ -33,7 +40,7 @@ class ShowUser(BaseModel):
     citizen_id: str
     occupation: str
     address: str
-    reservations: List[Reservation] = []
+    reservations: List[ReservationForUser] = []
 
     class Config():
         orm_mode = True
@@ -67,3 +74,9 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     citizen_id: Optional[str] = None
+
+class UnauthorizedResponse(BaseModel):
+    detail: Optional[str] = "Not authenticated"
+
+class NotFoundResponse(BaseModel):
+    detail: Optional[str] = "No reservation with this id"
