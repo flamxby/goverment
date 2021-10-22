@@ -22,5 +22,5 @@ def create(request: schemas.User, db: Session):
 def get(citizen_id, db: Session):
     user = db.query(models.User).filter(models.User.citizen_id == citizen_id).first()
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No user with this id")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No user with this citizen id")
     return user

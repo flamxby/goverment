@@ -77,3 +77,6 @@ class TokenData(BaseModel):
 
 class UnauthorizedResponse(BaseModel):
     detail: Optional[str] = "Not authenticated"
+
+class NotFoundResponse(BaseModel):
+    detail: Optional[str] = "No reservation with this id"
