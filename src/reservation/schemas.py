@@ -74,3 +74,6 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     citizen_id: Optional[str] = None
+
+class UnauthorizedResponse(BaseModel):
+    detail: Optional[str] = "Not authenticated"

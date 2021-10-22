@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from typing import List
 
-from ..schemas import ShowReservation, Reservation, User
+from ..schemas import ShowReservation, Reservation, User, UnauthorizedResponse
 from ..database import get_db
 from .. import oauth2
 from sqlalchemy.orm import Session
@@ -16,8 +16,18 @@ router = APIRouter(
 def get_all_reservation(db: Session=Depends(get_db)):
     return reservation.get_all(db)
 
-@router.post('/', response_model=ShowReservation)
+@router.post('/', 
+    response_model=ShowReservation, 
+    status_code=status.HTTP_201_CREATED, 
+    summary="Create a Reservation", 
+    responses={status.HTTP_201_CREATED: {"model": ShowReservation, "description": "Create Successful"},
+        status.HTTP_401_UNAUTHORIZED: {"model": UnauthorizedResponse, "description": "Send a request but not authenticated"}
+    })
 def create_reservation(request: Reservation, db: Session=Depends(get_db), current_user: User = Depends(oauth2.get_current_user)):
+    """
+    Create a reservation with this information (need to authorize):
+    - **register_timestamp**: the datetime in ISO format
+    """
     return reservation.create(request, db, current_user)
 
 @router.get('/{reservation_id}', response_model=ShowReservation)
