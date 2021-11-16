@@ -162,10 +162,6 @@ def get_all_new_reservations(db: Session = Depends(get_db)):
             "model": UnauthorizedResponse,
             "description": "Send a request but not authenticated",
         },
-        status.HTTP_403_FORBIDDEN: {
-            "model": NoPermissionResponse,
-            "description": "Send a request but no permission",
-        },
         status.HTTP_404_NOT_FOUND: {
             "model": NotFoundResponse,
             "description": "Send a request but no object was found",
@@ -175,9 +171,8 @@ def get_all_new_reservations(db: Session = Depends(get_db)):
 def update_report_taken(
     reservation_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(oauth2.get_current_user),
 ):
     """
     Update the vaccinated field to true in the reservation model.
     """
-    return reservation.report_taken(reservation_id, db, current_user)
+    return reservation.report_taken(reservation_id, db)

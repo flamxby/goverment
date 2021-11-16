@@ -95,7 +95,7 @@ def get_all_new(db: Session):
     return all_new_reservations
 
 
-def report_taken(reservation_id: int, db: Session, current_user: schemas.User):
+def report_taken(reservation_id: int, db: Session):
     reservation = db.query(models.Reservation).filter(
         models.Reservation.reservation_id == reservation_id
     )
@@ -103,11 +103,7 @@ def report_taken(reservation_id: int, db: Session, current_user: schemas.User):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="No reservation with this id"
         )
-    if reservation.first().user_id != current_user.user_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="No permission"
-        )
-    request_body = {"vaccinated": True, "user_id": current_user.user_id}
+    request_body = {"vaccinated": True}
     reservation.update(request_body)
     db.commit()
     return reservation.first()

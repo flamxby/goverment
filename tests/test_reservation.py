@@ -141,3 +141,42 @@ def test_get_reservation_on_specific_date(test_db):
     response = client.get("/reservation/2021/10/12")
     assert response.status_code == 200
     assert response.json() == response_body
+
+def test_update_reservation_report_taken(test_db):
+    user_data = {
+        "name": "foo",
+        "surname": "rock",
+        "citizen_id": "1152347583215",
+        "birth_date": "2021-10-12",
+        "occupation": "doctor",
+        "address": "1145 bangkok",
+        "password": "strong_password",
+    }
+    response_body = {
+            "reservation_id": 1,
+            "register_timestamp": "2021-10-12T22:01:14.760000",
+            "owner": {
+                "name": "foo",
+                "surname": "rock",
+                "birth_date": "2021-10-12",
+                "citizen_id": "1152347583215",
+                "occupation": "doctor",
+                "address": "1145 bangkok",
+            },
+            "vaccinated": True,
+        }
+    # store user info in database
+    client.post("/user/", json=user_data, headers={"Content-Type": "application/json"})
+    # create reservation 1
+    create_reservation("2021-10-12T22:01:14.760Z")
+    response = client.put("reservation/report-taken/1")
+    assert response.status_code == 200
+    assert response.json() == response_body
+
+def test_update_non_existing_reservation_report_taken(test_db):
+    response = client.put("reservation/report-taken/1")
+    assert response.status_code == 404
+
+def test_update_negative_id_reservation_report_taken(test_db):
+    response = client.put("reservation/report-taken/-1")
+    assert response.status_code == 404
