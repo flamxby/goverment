@@ -1,19 +1,21 @@
 from .database import Base
-from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 
 
 class Reservation(Base):
-    __tablename__ = 'reservations'
+    __tablename__ = "reservations"
 
     reservation_id = Column(Integer, primary_key=True, index=True)
     register_timestamp = Column(DateTime)
-    user_id = Column(Integer, ForeignKey('users.user_id'))
+    user_id = Column(Integer, ForeignKey("users.user_id"))
+    vaccinated = Column(Boolean, default=False)
 
     owner = relationship("User", back_populates="reservations")
 
+
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     user_id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
@@ -25,5 +27,3 @@ class User(Base):
     password = Column(String)
 
     reservations = relationship("Reservation", back_populates="owner")
-
-    

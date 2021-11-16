@@ -23,6 +23,7 @@ def override_get_db():
     finally:
         db.close()
 
+
 def override_get_current_user():
     user_data = {
         "user_id": 1,
@@ -32,7 +33,7 @@ def override_get_current_user():
         "birth_date": "2021-10-12",
         "occupation": "doctor",
         "address": "1145 bangkok",
-        "password": "strong_password"
+        "password": "strong_password",
     }
     return User(**user_data)
 
@@ -43,16 +44,19 @@ def test_db():
     yield
     Base.metadata.drop_all(bind=engine)
 
+
 app.dependency_overrides[get_db] = override_get_db
 app.dependency_overrides[get_current_user] = override_get_current_user
 
 client = TestClient(app)
 
+
 def create_reservation(timestamp):
-    request_body = {
-        "register_timestamp": timestamp
-    }
-    return client.post('/reservation/', json=request_body, headers={'Content-Type': 'application/json'})
+    request_body = {"register_timestamp": timestamp}
+    return client.post(
+        "/reservation/", json=request_body, headers={"Content-Type": "application/json"}
+    )
+
 
 def test_create_reservation_with_valid_request_body(test_db):
     user_data = {
@@ -62,14 +66,12 @@ def test_create_reservation_with_valid_request_body(test_db):
         "birth_date": "2021-10-12",
         "occupation": "doctor",
         "address": "1145 bangkok",
-        "password": "strong_password"
+        "password": "strong_password",
     }
     # store user info in database
-    client.post("/user/", json=user_data, headers={'Content-Type': 'application/json'})
-    
-    request_body = {
-        "register_timestamp": "2021-10-12T22:01:14.760Z"
-    }
+    client.post("/user/", json=user_data, headers={"Content-Type": "application/json"})
+
+    request_body = {"register_timestamp": "2021-10-12T22:01:14.760Z"}
     response_body = {
         "reservation_id": 1,
         "register_timestamp": "2021-10-12T22:01:14.760000",
@@ -79,13 +81,17 @@ def test_create_reservation_with_valid_request_body(test_db):
             "birth_date": "2021-10-12",
             "citizen_id": "1152347583215",
             "occupation": "doctor",
-            "address": "1145 bangkok"
-        }
+            "address": "1145 bangkok",
+        },
+        "vaccinated": False,
     }
-    response = client.post('/reservation/', json=request_body, headers={'Content-Type': 'application/json'})
+    response = client.post(
+        "/reservation/", json=request_body, headers={"Content-Type": "application/json"}
+    )
     assert response.status_code == 201
     assert response.json() == response_body
-    
+
+
 def test_get_reservation_on_specific_date(test_db):
     user_data = {
         "name": "foo",
@@ -94,10 +100,10 @@ def test_get_reservation_on_specific_date(test_db):
         "birth_date": "2021-10-12",
         "occupation": "doctor",
         "address": "1145 bangkok",
-        "password": "strong_password"
+        "password": "strong_password",
     }
     # store user info in database
-    client.post("/user/", json=user_data, headers={'Content-Type': 'application/json'})
+    client.post("/user/", json=user_data, headers={"Content-Type": "application/json"})
     # create reservation 1
     create_reservation("2021-10-12T22:01:14.760Z")
     response_body = [
@@ -110,8 +116,9 @@ def test_get_reservation_on_specific_date(test_db):
                 "birth_date": "2021-10-12",
                 "citizen_id": "1152347583215",
                 "occupation": "doctor",
-                "address": "1145 bangkok"
-            }
+                "address": "1145 bangkok",
+            },
+            "vaccinated": False,
         },
         {
             "reservation_id": 2,
@@ -122,14 +129,54 @@ def test_get_reservation_on_specific_date(test_db):
                 "birth_date": "2021-10-12",
                 "citizen_id": "1152347583215",
                 "occupation": "doctor",
-                "address": "1145 bangkok"
-            }
-        }
+                "address": "1145 bangkok",
+            },
+            "vaccinated": False,
+        },
     ]
     # create reservation 2
     create_reservation("2021-10-12T22:02:14.760Z")
     # create reservation 3
     create_reservation("2021-10-13T22:02:14.760Z")
-    response = client.get('/reservation/2021/10/12')
+    response = client.get("/reservation/2021/10/12")
     assert response.status_code == 200
     assert response.json() == response_body
+
+def test_update_reservation_report_taken(test_db):
+    user_data = {
+        "name": "foo",
+        "surname": "rock",
+        "citizen_id": "1152347583215",
+        "birth_date": "2021-10-12",
+        "occupation": "doctor",
+        "address": "1145 bangkok",
+        "password": "strong_password",
+    }
+    response_body = {
+            "reservation_id": 1,
+            "register_timestamp": "2021-10-12T22:01:14.760000",
+            "owner": {
+                "name": "foo",
+                "surname": "rock",
+                "birth_date": "2021-10-12",
+                "citizen_id": "1152347583215",
+                "occupation": "doctor",
+                "address": "1145 bangkok",
+            },
+            "vaccinated": True,
+        }
+    # store user info in database
+    client.post("/user/", json=user_data, headers={"Content-Type": "application/json"})
+    # create reservation 1
+    create_reservation("2021-10-12T22:01:14.760Z")
+    response = client.put("reservation/report-taken/1")
+    assert response.status_code == 200
+    assert response.json() == response_body
+
+def test_update_non_existing_reservation_report_taken(test_db):
+    response = client.put("reservation/report-taken/1")
+    assert response.status_code == 404
+
+def test_update_negative_id_reservation_report_taken(test_db):
+    response = client.put("reservation/report-taken/-1")
+    assert response.status_code == 404
