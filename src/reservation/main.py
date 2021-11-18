@@ -4,7 +4,7 @@ from . import models
 from .database import engine
 from .routers import reservation, user, authentication
 
-app = FastAPI()
+app = FastAPI(title="Flamby")
 
 origins = ["*"]
 
