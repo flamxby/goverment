@@ -97,7 +97,7 @@
     * **psycopg2** is a DB API 2.0 compliant PostgreSQL driver that is actively developed.
 
 ## How to start the application and verify it is working
-1. **Clone** government project to your machine. [*See how to clone the project.*](https://github.com/flamxby/government/blob/master/INSTALL.md#how-to-clone-have-a-night-day-project)
+1. **Clone** government project to your machine. [*See how to clone the project.*](https://github.com/flamxby/government/blob/master/INSTALL.md#how-to-clone-government-project)
 2. Follows the [**setting up a virtual environment**](https://github.com/flamxby/government/blob/master/INSTALL.md#instructions-for-setting-up-a-virtual-environment-virtualenv).
 3. Follows the [**steps needed to configure the application for running**](https://github.com/flamxby/government/blob/master/INSTALL.md#steps-needed-to-configure-the-application-for-running).
 4. Access to a command-line/terminal window.
