@@ -5,7 +5,7 @@
 
 ![193015ce8eafea4c3c492d9864444a88.png](https://www.img.in.th/images/193015ce8eafea4c3c492d9864444a88.png)
 
-Government is a module that prepares the booking master data, provides booking data to the Service Sites and Service Takers, accommodate priority change, update vaccination taken data, cancel unnecessary bookings data to the service sites, and provide a report of the number of vaccination takers per site per day.
+Government is a module that prepares the booking master data, provides booking data to the Service Sites and Service Takers, accommodates priority change, updates vaccination taken data, cancel unnecessary bookings data to the service sites, and provides a report of the number of vaccination takers per site per day.
 ***
 
 ## Project Documents
