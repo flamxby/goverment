@@ -18,7 +18,8 @@ Government is a module that prepares the booking master data, provides booking d
 * [Measurement and Analysis](https://github.com/flamxby/government/wiki/Measurement-and-Analysis)
 * [Configuration Management](https://github.com/flamxby/government/wiki/Configuration-Management)
 * [Project Monitoring and Control](https://github.com/flamxby/government/wiki/Project-Monitoring-and-Control)
-* [Quality Assurance For WCG Group](https://github.com/flamxby/government/wiki/Quality-Assurance)
+* [Quality Assurance For WCG Group](https://github.com/flamxby/government/wiki/Quality-Assurance-For-WCG-Group)
+* [Final](https://github.com/flamxby/government/wiki/Final)
 * [Presentation](https://github.com/flamxby/government/wiki/Presentation)
 
 
