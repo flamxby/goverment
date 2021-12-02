@@ -21,3 +21,18 @@ Feature: Reservation
     When user1 send a request to get a reservation id: "1"
     Then website send status code "200" to user1 from get reservation
     Then tear down database
+
+  Scenario: simple update reservation
+    Given user1 input a timestamp: "27/10/2021" to create reservation
+    When user1 send a request to create reservation
+    Given user1 input a new timestamp: "1/11/2021" to update reservation
+    When user1 send a request to update reservation id: "1"
+    Then website send status code "200" to user1 from update reservation
+    Then tear down database
+
+  Scenario: simple delete reservation
+    Given user1 input a timestamp: "27/10/2021" to create reservation
+    When user1 send a request to create reservation
+    When user1 send a request to delete a reservation id: "1"
+    Then website send status code "200" to user1 from delete reservation
+    Then tear down database
