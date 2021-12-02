@@ -16,3 +16,17 @@ Feature: Registration
     Then website send status code "201" to user1
     Then Has an error for create user2
     Then tear down database
+
+  Scenario: try to register with invaild citizen id
+    Given create the test database
+    And user1 input a citizen_id: "vaild citizen id" to create
+    When user1 send a request to create a user
+    Then website send status code "422" to user1
+    Then tear down database
+
+  Scenario: try to register with digit not equal to 13
+    Given create the test database
+    And user1 input a citizen_id: "13" to create
+    When user1 send a request to create a user
+    Then website send status code "422" to user1
+    Then tear down database
