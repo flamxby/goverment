@@ -43,6 +43,9 @@ jobs:
       run: |
         coverage run -m pytest
         coverage xml
+    - name: E2E testing with behave
+      run: /
+        behave
     - name: Upload code coverage
       uses: codecov/codecov-action@v2
       with:
