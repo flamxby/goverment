@@ -39,23 +39,63 @@ client = TestClient(app)
 SECRET_KEY = os.environ.get("SECRET_KEY")
 ALGORITHM = os.environ.get("ALGORITHM")
 
-def test_login_with_valid_username_and_password(test_db):
-    user_data = {
-        "name": "foo",
-        "surname": "rock",
-        "citizen_id": "1152347583215",
-        "birth_date": "2021-10-12",
-        "occupation": "doctor",
-        "address": "1145 bangkok",
-        "password": "strong_password"
-    }
-    client.post("/user/", json=user_data, headers={'Content-Type': 'application/json'})
-    login_data = {
-        "username": "1152347583215",
-        "password": "strong_password"
-    }
-    response = client.post('/login', data=login_data)
-    assert response.status_code == 200
-    token = response.json().get("access_token")
-    credential = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    assert credential["sub"] == login_data["username"]
+class TestLogin:
+
+    def test_login_with_valid_username_and_password(self, test_db):
+        user_data = {
+            "name": "foo",
+            "surname": "rock",
+            "citizen_id": "1152347583215",
+            "birth_date": "2021-10-12",
+            "occupation": "doctor",
+            "address": "1145 bangkok",
+            "password": "strong_password"
+        }
+        client.post("/user/", json=user_data, headers={'Content-Type': 'application/json'})
+        login_data = {
+            "username": "1152347583215",
+            "password": "strong_password"
+        }
+        response = client.post('/login', data=login_data)
+        assert response.status_code == 200
+        token = response.json().get("access_token")
+        credential = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        assert credential["sub"] == login_data["username"]
+
+    def test_login_with_valid_username_and_invalid_password(self, test_db):
+        user_data = {
+            "name": "foo",
+            "surname": "rock",
+            "citizen_id": "1152347583215",
+            "birth_date": "2021-10-12",
+            "occupation": "doctor",
+            "address": "1145 bangkok",
+            "password": "strong_password"
+        }
+        client.post("/user/", json=user_data, headers={'Content-Type': 'application/json'})
+        login_data = {
+            "username": "1152347583215",
+            "password": "rigth_password"
+        }
+        response = client.post('/login', data=login_data)
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Incorrect password"
+
+    def test_login_with_does_not_exist_account(self, test_db):
+        login_data = {
+            "username": "1152347583215",
+            "password": "rigth_password"
+        }
+        response = client.post('/login', data=login_data)
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Cannot found 1152347583215 citizen id"
+
+    def test_login_with_string_username(self, test_db):
+        login_data = {
+            "username": "real username",
+            "password": "rigth_password"
+        }
+        response = client.post('/login', data=login_data)
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Cannot found real username citizen id"
+        

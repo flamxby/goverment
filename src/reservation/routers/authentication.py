@@ -19,7 +19,7 @@ def login(request: OAuth2PasswordRequestForm=Depends(), db:Session=Depends(datab
     """
     user = db.query(models.User).filter(models.User.citizen_id == request.username).first()
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Cannot found {request.citizen_id} citizen id")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Cannot found {request.username} citizen id")
     if not Hash.verify_password(request.password, user.password):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Incorrect password")
     # generate a jwt token

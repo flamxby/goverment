@@ -43,6 +43,14 @@ jobs:
       run: |
         coverage run -m pytest
         coverage xml
+    - name: E2E testing with behave
+      env:
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        ALGORITHM: ${{ secrets.ALGORITHM }}
+        ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      run: |
+        behave
     - name: Upload code coverage
       uses: codecov/codecov-action@v2
       with:
