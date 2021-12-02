@@ -15,7 +15,8 @@ SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 )
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+TestingSessionLocal = sessionmaker(
+    autocommit=False, autoflush=False, bind=engine)
 
 
 def override_get_db():
@@ -59,7 +60,8 @@ def store_user_in_db():
         "password": "strong_password",
     }
     # store user info in database
-    client.post("/user/", json=user_data, headers={"Content-Type": "application/json"})
+    client.post("/user/", json=user_data,
+                headers={"Content-Type": "application/json"})
 
 
 app.dependency_overrides[get_db] = override_get_db
@@ -88,7 +90,8 @@ class TestGetAllReservation:
         response = client.get("/reservation/")
         assert response.status_code == 200
         assert len(response.json()) == 1
-        assert response.json()[0]["register_timestamp"] == "2021-10-12T22:02:14.760000"
+        assert response.json()[
+            0]["register_timestamp"] == "2021-10-12T22:02:14.760000"
 
     def test_get_all_reservation_when_db_has_many_reservation(
         self, test_db, store_user_in_db
@@ -177,7 +180,8 @@ class TestGetReservationInSpecificId:
     def test_get_reservation_with_string_id(self, test_db, store_user_in_db):
         response = client.get("/reservation/one")
         assert response.status_code == 422
-        assert response.json()["detail"][0]["msg"] == "value is not a valid integer"
+        assert response.json()[
+            "detail"][0]["msg"] == "value is not a valid integer"
 
 
 class TestUpdateReservation:
@@ -192,7 +196,8 @@ class TestUpdateReservation:
             headers={"Content-Type": "application/json"},
         )
         assert response.status_code == 200
-        assert response.json()["register_timestamp"] == "2021-11-12T22:01:14.760000"
+        assert response.json()[
+            "register_timestamp"] == "2021-11-12T22:01:14.760000"
 
     def test_update_reservation_with_invalid_requset_body_exist_reservation_and_right_id(
         self, test_db, store_user_in_db
@@ -241,7 +246,8 @@ class TestUpdateReservation:
             headers={"Content-Type": "application/json"},
         )
         assert response.status_code == 422
-        assert response.json()["detail"][0]["msg"] == "value is not a valid integer"
+        assert response.json()[
+            "detail"][0]["msg"] == "value is not a valid integer"
 
 
 class TestDeleteReservation:
@@ -267,7 +273,8 @@ class TestDeleteReservation:
     def test_delete_reservation_with_string_id(self, test_db, store_user_in_db):
         response = client.delete("/reservation/one")
         assert response.status_code == 422
-        assert response.json()["detail"][0]["msg"] == "value is not a valid integer"
+        assert response.json()[
+            "detail"][0]["msg"] == "value is not a valid integer"
 
 
 class TestGetReservationOnSpecificDate:
@@ -353,3 +360,68 @@ class TestGetReservationOnSpecificDate:
         response = client.get("/reservation/2021/20/12")
         assert response.status_code == 422
         assert response.json()["detail"] == "Invalid format date"
+
+
+class TestNewReservation:
+    def test_get_new_reservation_with_new_reservation_in_db(self, test_db, store_user_in_db):
+        today_date = datetime.now()
+        create_reservation(today_date.isoformat())
+        create_reservation(today_date.isoformat())
+        response = client.get("/reservation/new/")
+        assert response.status_code == 200
+        assert len(response.json()) == 2
+
+    def test_get_new_reservation_with_has_no_new_reservation_in_db(self, test_db, store_user_in_db):
+        response = client.get("/reservation/new/")
+        assert response.status_code == 200
+        assert response.json() == []
+
+
+class TestReportTaken:
+    def test_update_reservation_report_taken(self, test_db):
+        user_data = {
+            "name": "foo",
+            "surname": "rock",
+            "citizen_id": "1152347583215",
+            "birth_date": "2021-10-12",
+            "occupation": "doctor",
+            "address": "1145 bangkok",
+            "password": "strong_password",
+        }
+        response_body = {
+            "reservation_id": 1,
+            "register_timestamp": "2021-10-12T22:01:14.760000",
+            "owner": {
+                "name": "foo",
+                "surname": "rock",
+                "birth_date": "2021-10-12",
+                "citizen_id": "1152347583215",
+                "occupation": "doctor",
+                "address": "1145 bangkok",
+            },
+            "vaccinated": True,
+        }
+        # store user info in database
+        client.post("/user/", json=user_data,
+                    headers={"Content-Type": "application/json"})
+        # create reservation 1
+        create_reservation("2021-10-12T22:01:14.760Z")
+        response = client.put("reservation/report-taken/1")
+        assert response.status_code == 200
+        assert response.json() == response_body
+
+    def test_update_non_existing_reservation_report_taken(self, test_db):
+        response = client.put("reservation/report-taken/1")
+        assert response.status_code == 404
+        assert response.json()["detail"] == "No reservation with this id"
+
+    def test_update_negative_id_reservation_report_taken(self, test_db):
+        response = client.put("reservation/report-taken/-1")
+        assert response.status_code == 404
+        assert response.json()["detail"] == "No reservation with this id"
+
+    def test_update_string_id_reservation_report_taken(self, test_db):
+        response = client.put("reservation/report-taken/one")
+        assert response.status_code == 422
+        assert response.json()[
+            "detail"][0]["msg"] == "value is not a valid integer"
