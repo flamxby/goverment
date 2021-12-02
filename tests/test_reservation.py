@@ -15,7 +15,8 @@ SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 )
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+TestingSessionLocal = sessionmaker(
+    autocommit=False, autoflush=False, bind=engine)
 
 
 def override_get_db():
@@ -46,6 +47,7 @@ def test_db():
     yield
     Base.metadata.drop_all(bind=engine)
 
+
 @pytest.fixture()
 def store_user_in_db():
     user_data = {
@@ -58,7 +60,8 @@ def store_user_in_db():
         "password": "strong_password",
     }
     # store user info in database
-    client.post("/user/", json=user_data, headers={"Content-Type": "application/json"})
+    client.post("/user/", json=user_data,
+                headers={"Content-Type": "application/json"})
 
 
 app.dependency_overrides[get_db] = override_get_db
@@ -66,11 +69,13 @@ app.dependency_overrides[get_current_user] = override_get_current_user
 
 client = TestClient(app)
 
+
 def create_reservation(timestamp):
     request_body = {"register_timestamp": timestamp}
     return client.post(
         "/reservation/", json=request_body, headers={"Content-Type": "application/json"}
     )
+
 
 class TestGetAllReservation:
 
@@ -84,7 +89,8 @@ class TestGetAllReservation:
         response = client.get("/reservation/")
         assert response.status_code == 200
         assert len(response.json()) == 1
-        assert response.json()[0]["register_timestamp"] == "2021-10-12T22:02:14.760000"
+        assert response.json()[
+            0]["register_timestamp"] == "2021-10-12T22:02:14.760000"
 
     def test_get_all_reservation_when_db_has_many_reservation(self, test_db, store_user_in_db):
         create_reservation("2021-10-12T22:02:14.760Z")
@@ -125,3 +131,82 @@ class TestCreateReservation:
         )
         assert response.status_code == 422
         assert response.json()["detail"][0]["msg"] == "invalid datetime format"
+
+class TestGetReservationInSpecificId:
+
+    def test_get_reservation_with_exist_reservation_and_right_id(self, test_db, store_user_in_db):
+        create_reservation("2021-10-12T22:02:14.760Z")
+        response_body = {
+            "reservation_id": 1,
+            "register_timestamp": "2021-10-12T22:02:14.760000",
+            "owner": {
+                "name": "foo",
+                "surname": "rock",
+                "birth_date": "2021-10-12",
+                "citizen_id": "1152347583215",
+                "occupation": "doctor",
+                "address": "1145 bangkok",
+            },
+            "vaccinated": False,
+        }
+        response = client.get("/reservation/1")
+        assert response.status_code == 200
+        assert response.json() == response_body
+
+    def test_get_reservation_with_not_exist_reservation(self, test_db, store_user_in_db):
+        response = client.get("/reservation/1")
+        assert response.status_code == 404
+        assert response.json()["detail"] == "No reservation with this id"
+
+    def test_get_reservation_with_negative_id(self, test_db, store_user_in_db):
+        response = client.get("/reservation/-1")
+        assert response.status_code == 404
+        assert response.json()["detail"] == "No reservation with this id"
+
+    def test_get_reservation_with_string_id(self, test_db, store_user_in_db):
+        response = client.get("/reservation/one")
+        assert response.status_code == 422
+        assert response.json()[
+            "detail"][0]["msg"] == "value is not a valid integer"
+
+
+class TestUpdateReservation:
+    
+    def test_update_reservation_with_valid_request_body_exist_reservation_and_right_id(self, test_db, store_user_in_db):
+        create_reservation("2021-10-12T22:02:14.760Z")
+        request_body = {"register_timestamp": "2021-11-12T22:01:14.760Z"}
+        response = client.put("/reservation/1", json=request_body,
+                              headers={"Content-Type": "application/json"})
+        assert response.status_code == 200
+        assert response.json()[
+            "register_timestamp"] == "2021-11-12T22:01:14.760000"
+
+    def test_update_reservation_with_invalid_requset_body_exist_reservation_and_right_id(self, test_db, store_user_in_db):
+        create_reservation("2021-10-12T22:02:14.760Z")
+        request_body = {"register_timestamp": "11/18/2021"}
+        response = client.put("/reservation/1", json=request_body,
+                              headers={"Content-Type": "application/json"})
+        assert response.status_code == 422
+        assert response.json()["detail"][0]["msg"] == "invalid datetime format"
+
+    def test_update_reservation_with_valid_requset_body_not_exist_reservation_and_right_id(self, test_db, store_user_in_db):
+        request_body = {"register_timestamp": "2021-11-12T22:01:14.760Z"}
+        response = client.put("/reservation/1", json=request_body,
+                              headers={"Content-Type": "application/json"})
+        assert response.status_code == 404
+        assert response.json()["detail"] == "No reservation with this id"
+
+    def test_update_reservation_with_valid_requset_body_and_negative_id(self, test_db, store_user_in_db):
+        request_body = {"register_timestamp": "2021-11-12T22:01:14.760Z"}
+        response = client.put("/reservation/-1", json=request_body,
+                              headers={"Content-Type": "application/json"})
+        assert response.status_code == 404
+        assert response.json()["detail"] == "No reservation with this id"
+
+    def test_update_reservation_with_valid_requset_body_and_string_id(self, test_db, store_user_in_db):
+        request_body = {"register_timestamp": "2021-11-12T22:01:14.760Z"}
+        response = client.put("/reservation/one", json=request_body,
+                              headers={"Content-Type": "application/json"})
+        assert response.status_code == 422
+        assert response.json()[
+            "detail"][0]["msg"] == "value is not a valid integer"
